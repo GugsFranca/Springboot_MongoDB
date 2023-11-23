@@ -1,5 +1,6 @@
 package com.curso.spring_mongodb.resources;
 
+import com.curso.spring_mongodb.domain.Post;
 import com.curso.spring_mongodb.domain.User;
 import com.curso.spring_mongodb.dto.UserDTO;
 import com.curso.spring_mongodb.service.UserService;
@@ -30,6 +31,12 @@ public class UserResource {
         return ResponseEntity.ok().body(new UserDTO(obj));
     }
 
+    @GetMapping(value = "/{id}/posts")
+    public ResponseEntity<List<Post>> findPosts(@PathVariable String id) {
+        User obj = service.findById(id);
+        return ResponseEntity.ok().body(obj.getPosts());
+    }
+
     @PostMapping
     public ResponseEntity<Void> insert(@RequestBody UserDTO dto) {
         User obj = service.fromDTO(dto);
@@ -37,13 +44,15 @@ public class UserResource {
         URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{id}").buildAndExpand(obj.getId()).toUri();
         return ResponseEntity.created(uri).build();
     }
+
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id){
+    public ResponseEntity<Void> delete(@PathVariable String id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
     @PutMapping(value = "/{id}")
-    public  ResponseEntity<User> update(@RequestBody UserDTO objDto, @PathVariable String id){
+    public ResponseEntity<User> update(@RequestBody UserDTO objDto, @PathVariable String id) {
         User obj = service.fromDTO(objDto);
         obj.setId(id);
         obj = service.update(obj);
